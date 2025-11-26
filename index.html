@@ -98,12 +98,13 @@
 
     <!-- n8n Chatbot -->
     <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+    <div id="chat-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 50;"></div>
     <script type="module">
-      import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
-
-      createChat({
-        webhookUrl: 'https://corn-routes-connectors-birmingham.trycloudflare.com/webhook/dental-booking'
-      });
+    import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+    createChat({
+    webhookUrl: 'http://localhost:5678/webhook/8151370e-b424-4e9c-babb-e4829dd134de/chat',
+    target: '#chat-container'
+    });
     </script>
   </body>
 </html>
