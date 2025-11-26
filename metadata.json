@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Galaxy Dental Clinic",
+  "description": "A premium, family-friendly dental clinic website located in Kondapur, Hyderabad, featuring appointment booking, doctor profiles, and simulated practice management automation.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
