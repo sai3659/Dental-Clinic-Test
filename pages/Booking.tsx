@@ -187,7 +187,7 @@ const Booking: React.FC = () => {
       if (logs[i].includes("Syncing")) {
         try {
           // Sending data to n8n webhook (Cloudflare Tunnel URL)
-          await fetch("https://corn-routes-connectors-birmingham.trycloudflare.com/webhook/dental-booking", {
+          await fetch("https://enormous-copyrighted-instruments-stores.trycloudflare.com/webhook/dental-booking", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
