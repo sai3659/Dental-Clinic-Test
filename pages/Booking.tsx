@@ -30,11 +30,6 @@ const Booking: React.FC = () => {
 
   // Doctor Availability Logic (Simulation)
   const getDoctorAvailability = (docId: string) => {
-    // Simple parsing based on the static string data or hardcoded for demo
-    // Dr. Sharma: Mon-Sat, 10-2
-    // Dr. Reddy: Tue-Sun, 11-8
-    // Dr. Priya: Mon-Sat, 4-9
-    
     if (docId === 'dr-sharma') return { days: [1,2,3,4,5,6], startHour: 10, endHour: 14, label: 'Mon-Sat: 10AM - 2PM' };
     if (docId === 'dr-reddy') return { days: [0,2,3,4,5,6], startHour: 11, endHour: 20, label: 'Tue-Sun: 11AM - 8PM' };
     if (docId === 'dr-priya') return { days: [1,2,3,4,5,6], startHour: 16, endHour: 21, label: 'Mon-Sat: 4PM - 9PM' };
@@ -118,7 +113,7 @@ const Booking: React.FC = () => {
       halfTimeDate.setHours(hour, 30, 0, 0);
       const halfTimeString = `${hour <= 12 ? hour : hour - 12}:30 ${hour < 12 ? 'AM' : 'PM'}`;
       
-      // Ensure half hour slot is also before endHour (simple check, strictly usually endHour means close time)
+      // Ensure half hour slot is also before endHour
       if (hour < endHour) {
          if (isToday(selectedDate)) {
           if (halfTimeDate > now) {
@@ -164,394 +159,374 @@ const Booking: React.FC = () => {
       appointmentDate: selectedDate ? formatDate(selectedDate) : '',
       appointmentTime: formData.time
     };
-
-    const logs = [
-      "Checking Doctor's Availability...",
-      "Validating Time Slot...",
-      "Slot confirmed.",
-      "Generating Patient ID: GALAXY-" + Math.floor(1000 + Math.random() * 9000),
-      "Configuring 24h SMS & WhatsApp Reminders...",
-      "Scheduling 2h Prior Email Notification...",
-      "Enrolling in Birthday Rewards Program (10% Off)...",
-      "Preparing Post-Treatment Care Guide...",
-      "Setting up Aligner/Checkup Follow-up Sequence...",
+    
+    const steps = [
+      "Validating patient details...",
+      "Checking doctor availability...",
       "Syncing with Clinic Management System...",
-      "Booking Confirmed!"
+      "Setting up 24hr & 2hr SMS/WhatsApp reminders...",
+      "Scheduling post-treatment care instructions...",
+      "Checking birthday for personalized coupon...",
+      "Finalizing appointment slot..."
     ];
 
-    for (let i = 0; i < logs.length; i++) {
-      await new Promise(r => setTimeout(r, 600)); // Simulate delay
-      setAutomationLog(prev => [...prev, logs[i]]);
+    for (const log of steps) {
+      await new Promise(resolve => setTimeout(resolve, 800));
+      setAutomationLog(prev => [...prev, log]);
       
-      // Trigger Webhook when 'Syncing' log appears
-      if (logs[i].includes("Syncing")) {
-        try {
-          // Sending data to n8n webhook (Cloudflare Tunnel URL)
-          await fetch("https://enormous-copyrighted-instruments-stores.trycloudflare.com/webhook/dental-booking", {
+      // Hook into specific steps for simulated actions
+      if (log === "Syncing with Clinic Management System...") {
+         console.log("Sending data to webhook (Simulated):", payload);
+         
+         // Webhook commented out to prevent errors
+         /*
+         fetch("https://enormous-copyrighted-instruments-stores.trycloudflare.com/webhook/dental-booking", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
-          });
-        } catch (error) {
-          // Log as warning to avoid "Failed to fetch" red errors in console appearing as crashes to the user
-          // This allows the demo to continue even if the webhook tunnel is down
-          console.warn("Webhook sync skipped: Server is offline or unreachable.", error);
-        }
+          }).catch(err => console.warn("Webhook unavailable (expected in demo):", err));
+         */
       }
     }
 
     setLoading(false);
-    setStep(3); // Success screen
+    setStep(3);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedDate || !formData.time) {
-      alert("Please select a date and time.");
-      return;
+    if (step === 1) {
+      if (formData.name && formData.phone && formData.doctorId) {
+        setStep(2);
+      } else {
+        alert('Please fill in all required details');
+      }
+    } else {
+      simulateAutomation();
     }
-    setStep(2); // Go to automation simulation view
-    simulateAutomation();
   };
-
-  // Render Calendar Grid
-  const renderCalendar = () => {
-    const daysInMonth = getDaysInMonth(currentMonth);
-    const firstDay = getFirstDayOfMonth(currentMonth);
-    const days = [];
-
-    // Empty cells for days before the 1st
-    for (let i = 0; i < firstDay; i++) {
-      days.push(<div key={`empty-${i}`} className="h-10 md:h-12"></div>);
-    }
-
-    // Days of the month
-    for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-      const isSelected = selectedDate?.getDate() === day && selectedDate?.getMonth() === currentMonth.getMonth();
-      const isDayAvailable = isDoctorAvailableOnDay(date);
-      const disabled = isPast(date) || !isDayAvailable;
-      const today = isToday(date);
-
-      days.push(
-        <button
-          key={day}
-          onClick={() => handleDateClick(day)}
-          disabled={disabled}
-          className={`
-            h-10 md:h-12 w-full rounded-xl text-sm font-medium transition-all relative flex items-center justify-center border-2
-            ${disabled 
-              ? 'text-slate-300 dark:text-slate-600 cursor-not-allowed border-transparent bg-slate-50 dark:bg-slate-800/50' 
-              : 'border-transparent hover:border-secondary/30 dark:hover:border-purple-500/30 hover:bg-sky-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200'}
-            ${isSelected 
-              ? '!bg-gradient-to-tr !from-secondary !to-teal-500 dark:!from-purple-600 dark:!to-indigo-600 !text-white !shadow-lg !scale-110 !border-transparent z-10' 
-              : ''}
-            ${today && !isSelected ? 'border-secondary/50 dark:border-purple-500/50 text-secondary dark:text-purple-400 font-bold' : ''}
-          `}
-        >
-          {day}
-          {today && !isSelected && <span className="absolute bottom-1 w-1 h-1 bg-secondary dark:bg-purple-500 rounded-full"></span>}
-        </button>
-      );
-    }
-    return days;
-  };
-
-  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   return (
-    <div className="bg-sky-50 dark:bg-slate-900 min-h-screen py-10 px-4 transition-colors">
-      <div className="max-w-6xl mx-auto bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden transition-colors border border-slate-100 dark:border-slate-700">
+    <div className="bg-slate-50 dark:bg-slate-900 min-h-screen py-12 transition-colors">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Header */}
-        <div className="bg-secondary dark:bg-purple-600 p-8 text-center text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
-          <div className="absolute bottom-0 left-0 w-40 h-40 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-xl"></div>
-          <h1 className="text-3xl font-bold mb-2 relative z-10">Book Your Appointment</h1>
-          <p className="text-teal-100 dark:text-purple-200 relative z-10">Select your preferred doctor and schedule a visit.</p>
+        {/* Step Indicator */}
+        <div className="mb-8">
+           <div className="flex justify-between items-center relative">
+              <div className="absolute left-0 top-1/2 w-full h-1 bg-slate-200 dark:bg-slate-700 -z-10"></div>
+              {[1, 2, 3].map((s) => (
+                <div key={s} className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-500 ${step >= s ? 'bg-secondary dark:bg-purple-600 text-white scale-110' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'}`}>
+                  {step > s ? <CheckCircle size={20} /> : s}
+                </div>
+              ))}
+           </div>
+           <div className="flex justify-between mt-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+              <span>Details</span>
+              <span>Slot</span>
+              <span>Confirm</span>
+           </div>
         </div>
 
-        {/* Content */}
-        <div className="p-4 md:p-8">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700 transition-colors">
           {step === 1 && (
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              
-              {/* Left Column: Details */}
-              <div className="lg:col-span-4 space-y-6">
+            <div className="p-8 animate-fade-in">
+              <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Patient Details</h2>
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Select Specialist</label>
                   <div className="relative">
-                    <User className="absolute left-3 top-3.5 text-slate-400" size={18}/>
+                    <User className="absolute left-3 top-3 text-slate-400" size={18} />
                     <select 
                       name="doctorId" 
-                      required
-                      value={formData.doctorId}
+                      value={formData.doctorId} 
                       onChange={handleChange}
-                      className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white rounded-xl pl-10 p-3.5 focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 focus:border-transparent outline-none transition-colors appearance-none"
+                      className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none appearance-none dark:text-white transition-colors"
+                      required
                     >
                       <option value="">-- Choose Doctor --</option>
                       {DOCTORS.map(doc => (
-                        <option key={doc.id} value={doc.id}>{doc.name} - {doc.specialization}</option>
+                        <option key={doc.id} value={doc.id}>{doc.name} ({doc.specialization})</option>
                       ))}
                     </select>
                   </div>
-                  {formData.doctorId && (
-                    <div className="mt-2 text-xs text-secondary dark:text-sky-400 bg-sky-50 dark:bg-slate-700/50 p-2 rounded-lg flex items-center gap-2">
-                       <Clock size={14} />
-                       <span>Available: {availability.label}</span>
-                    </div>
-                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Treatment Type</label>
-                   <div className="relative">
-                    <CalendarIcon className="absolute left-3 top-3.5 text-slate-400" size={18}/>
+                  <div className="relative">
+                    <Info className="absolute left-3 top-3 text-slate-400" size={18} />
                     <select 
                       name="serviceId" 
-                      required
-                      value={formData.serviceId}
+                      value={formData.serviceId} 
                       onChange={handleChange}
-                      className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white rounded-xl pl-10 p-3.5 focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 focus:border-transparent outline-none transition-colors appearance-none"
+                      className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none appearance-none dark:text-white transition-colors"
+                      required
                     >
                       <option value="">-- Choose Service --</option>
-                      {SERVICES.map(srv => (
-                        <option key={srv.id} value={srv.id}>{srv.title}</option>
+                      {SERVICES.map(service => (
+                        <option key={service.id} value={service.id}>{service.title}</option>
                       ))}
-                      <option value="consultation">General Consultation</option>
                     </select>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
-                   <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4">Patient Details</h3>
-                   <div className="space-y-4">
-                      <div className="relative">
-                          <input 
-                            type="text" 
-                            name="name"
-                            placeholder="Full Name"
-                            required
-                            value={formData.name}
-                            onChange={handleChange}
-                            className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white rounded-xl px-4 p-3 focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none transition-colors"
-                          />
-                      </div>
-                      <div className="relative">
-                          <input 
-                            type="tel" 
-                            name="phone"
-                            placeholder="Phone Number"
-                            required
-                            value={formData.phone}
-                            onChange={handleChange}
-                            className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white rounded-xl px-4 p-3 focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none transition-colors"
-                          />
-                      </div>
-                      <div className="relative">
-                          <input 
-                            type="email" 
-                            name="email"
-                            placeholder="Email Address"
-                            required
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white rounded-xl px-4 p-3 focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none transition-colors"
-                          />
-                      </div>
-                      <div className="relative">
-                          <textarea 
-                            name="notes"
-                            placeholder="Notes or Questions for the Doctor..."
-                            rows={3}
-                            value={formData.notes}
-                            onChange={handleChange}
-                            className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white rounded-xl px-4 p-3 focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none transition-colors resize-none"
-                          />
-                      </div>
-                   </div>
-                </div>
-              </div>
-
-              {/* Right Column: Calendar & Time */}
-              <div className="lg:col-span-8 bg-slate-50 dark:bg-slate-700/30 rounded-3xl p-6 border border-slate-100 dark:border-slate-700">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                    <CalendarIcon className="text-secondary dark:text-purple-400" size={20} />
-                    Select Date & Time
-                  </h3>
-                  <div className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-lg p-1 border border-slate-200 dark:border-slate-600 shadow-sm">
-                    <button type="button" onClick={handlePrevMonth} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"><ChevronLeft size={20} className="text-slate-600 dark:text-slate-300"/></button>
-                    <span className="text-sm font-semibold w-32 text-center text-slate-800 dark:text-white">{monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}</span>
-                    <button type="button" onClick={handleNextMonth} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"><ChevronRight size={20} className="text-slate-600 dark:text-slate-300"/></button>
+                <div className="border-t border-slate-100 dark:border-slate-700 pt-6">
+                  <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">Personal Info</h3>
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 text-slate-400" size={18} />
+                      <input 
+                        type="text" 
+                        name="name" 
+                        placeholder="Full Name" 
+                        value={formData.name} 
+                        onChange={handleChange} 
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none dark:text-white transition-colors"
+                        required 
+                      />
+                    </div>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-3 text-slate-400" size={18} />
+                      <input 
+                        type="tel" 
+                        name="phone" 
+                        placeholder="Phone Number" 
+                        value={formData.phone} 
+                        onChange={handleChange} 
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none dark:text-white transition-colors"
+                        required 
+                      />
+                    </div>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 text-slate-400" size={18} />
+                      <input 
+                        type="email" 
+                        name="email" 
+                        placeholder="Email Address" 
+                        value={formData.email} 
+                        onChange={handleChange} 
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none dark:text-white transition-colors"
+                        required 
+                      />
+                    </div>
+                     <div className="relative">
+                      <MessageSquare className="absolute left-3 top-3 text-slate-400" size={18} />
+                      <textarea 
+                        name="notes" 
+                        placeholder="Any specific notes or questions for the doctor? (Optional)" 
+                        value={formData.notes} 
+                        onChange={handleChange} 
+                        rows={3}
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none dark:text-white transition-colors resize-none"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                {/* Calendar Grid */}
-                <div className="mb-8 select-none">
-                  <div className="grid grid-cols-7 mb-2">
-                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                      <div key={day} className="text-center text-xs font-semibold text-slate-400 uppercase tracking-wide py-2">
-                        {day}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="grid grid-cols-7 gap-2">
-                    {renderCalendar()}
-                  </div>
-                  <div className="mt-2 flex gap-4 text-xs text-slate-500 dark:text-slate-400 justify-center">
-                    <div className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-gradient-to-tr from-secondary to-teal-500 dark:from-purple-600 dark:to-indigo-600"></div> Selected</div>
-                    <div className="flex items-center gap-1"><div className="w-3 h-3 rounded-full border border-secondary text-secondary font-bold flex items-center justify-center text-[8px]">12</div> Today</div>
-                    <div className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-slate-200 dark:bg-slate-700"></div> Unavailable</div>
-                  </div>
-                </div>
-
-                {/* Time Slots */}
-                {selectedDate && (
-                  <div className="animate-fade-in">
-                    <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
-                      <Clock size={16} /> Available Slots for {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-                    </h4>
-                    {timeSlots.length > 0 ? (
-                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                        {timeSlots.map(time => (
-                          <button
-                            key={time}
-                            type="button"
-                            onClick={() => setFormData({...formData, time})}
-                            className={`
-                              py-2 px-1 rounded-xl text-sm font-medium border-2 transition-all duration-200
-                              ${formData.time === time 
-                                ? 'bg-secondary dark:bg-purple-600 border-secondary dark:border-purple-600 text-white shadow-md transform scale-110' 
-                                : 'bg-white dark:bg-slate-800 border-transparent hover:border-secondary dark:hover:border-purple-500 text-slate-600 dark:text-slate-300 hover:shadow-sm'}
-                            `}
-                          >
-                            {time}
-                          </button>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="p-6 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-xl text-center text-sm flex flex-col items-center gap-2">
-                        <Info size={24} />
-                        <p>No slots available for this date. {formData.doctorId ? `Dr. ${selectedDoctorObj?.name.split(' ')[1]} might be off-duty.` : 'Please check another date.'}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-                
-                <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-600 flex justify-end">
-                   <button 
-                    type="submit"
-                    disabled={!selectedDate || !formData.time}
-                    className="bg-secondary dark:bg-purple-600 hover:bg-teal-700 dark:hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all flex items-center gap-2"
-                  >
-                    Confirm Booking <CheckCircle size={20} />
+                <div className="pt-4 flex justify-end">
+                  <button type="submit" className="bg-secondary dark:bg-purple-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-teal-700 dark:hover:bg-purple-700 transition-all shadow-lg flex items-center gap-2 hover:scale-105 active:scale-95">
+                    Next Step <ChevronRight size={18} />
                   </button>
                 </div>
-              </div>
-
-            </form>
-          )}
-
-          {step === 2 && (
-            <div className="text-center py-16 max-w-lg mx-auto">
-               <div className="flex justify-center mb-8">
-                 <div className="relative">
-                   <div className="w-24 h-24 border-4 border-slate-100 dark:border-slate-700 rounded-full"></div>
-                   <div className="w-24 h-24 border-4 border-secondary dark:border-purple-600 rounded-full border-t-transparent animate-spin absolute top-0 left-0"></div>
-                   <div className="absolute inset-0 flex items-center justify-center">
-                      <Loader2 size={32} className="text-secondary dark:text-purple-600 animate-spin" />
-                   </div>
-                 </div>
-               </div>
-               <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Processing Booking</h3>
-               <p className="text-slate-500 dark:text-slate-400 mb-8">Please wait while we secure your appointment...</p>
-               
-               <div className="bg-slate-900 text-green-400 font-mono text-sm p-6 rounded-2xl text-left h-64 overflow-y-auto shadow-inner border border-slate-800">
-                  {automationLog.map((log, index) => (
-                    <div key={index} className="flex items-center gap-3 mb-2 animate-fade-in">
-                       <span className="text-secondary dark:text-purple-400">➜</span> {log}
-                    </div>
-                  ))}
-                  {loading && <span className="animate-pulse">_</span>}
-               </div>
+              </form>
             </div>
           )}
 
-          {step === 3 && (
-             <div className="text-center py-10 max-w-2xl mx-auto">
-                <div className="w-28 h-28 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-8 text-green-600 dark:text-green-400 shadow-lg shadow-green-100 dark:shadow-none animate-bounce-slow">
-                   <CheckCircle size={56} />
-                </div>
-                <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Booking Confirmed!</h2>
-                
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 mb-8 border border-slate-100 dark:border-slate-700 shadow-lg">
-                  <div className="flex justify-between items-center mb-4 pb-4 border-b border-slate-100 dark:border-slate-700">
-                     <p className="text-slate-500 dark:text-slate-400">Appointment ID</p>
-                     <p className="text-xl font-mono font-bold text-slate-900 dark:text-white">#GALAXY-{Math.floor(1000 + Math.random() * 9000)}</p>
-                  </div>
-                  <div className="text-left space-y-3">
-                     <div className="flex justify-between">
-                       <span className="text-slate-500 dark:text-slate-400">Date:</span>
-                       <span className="font-semibold text-slate-800 dark:text-white">{selectedDate?.toLocaleDateString()}</span>
-                     </div>
-                     <div className="flex justify-between">
-                       <span className="text-slate-500 dark:text-slate-400">Time:</span>
-                       <span className="font-semibold text-slate-800 dark:text-white">{formData.time}</span>
-                     </div>
-                     <div className="flex justify-between">
-                       <span className="text-slate-500 dark:text-slate-400">Doctor:</span>
-                       <span className="font-semibold text-slate-800 dark:text-white">{DOCTORS.find(d => d.id === formData.doctorId)?.name || 'Specialist'}</span>
-                     </div>
-                  </div>
-                </div>
+          {step === 2 && (
+             <div className="p-8 animate-fade-in">
+               {!loading ? (
+                 <>
+                    <h2 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white flex items-center gap-2">
+                       <CalendarIcon className="text-secondary dark:text-purple-400" /> Select Date & Time
+                    </h2>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+                       Checking availability for <span className="font-semibold text-secondary dark:text-sky-400">{selectedDoctorObj?.name || 'Any Doctor'}</span>
+                    </p>
 
-                {/* Automated Care Section */}
-                <div className="bg-gradient-to-br from-slate-50 to-sky-50 dark:from-slate-800 dark:to-slate-800/50 rounded-2xl p-6 mb-8 border border-sky-100 dark:border-slate-700 text-left">
-                  <h3 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                    <HeartPulse className="text-secondary dark:text-purple-400" /> Galaxy Automated Care Enabled
-                  </h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                     <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-700 flex items-start gap-3">
-                        <Bell className="text-secondary dark:text-purple-400 shrink-0 mt-1" size={18} />
-                        <div>
-                           <p className="font-semibold text-sm text-slate-800 dark:text-slate-200">Smart Reminders</p>
-                           <p className="text-xs text-slate-500 dark:text-slate-400">SMS/WhatsApp (24h prior) & Email (2h prior) scheduled.</p>
-                        </div>
-                     </div>
-                     <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-700 flex items-start gap-3">
-                        <Gift className="text-pink-500 shrink-0 mt-1" size={18} />
-                        <div>
-                           <p className="font-semibold text-sm text-slate-800 dark:text-slate-200">Birthday Club</p>
-                           <p className="text-xs text-slate-500 dark:text-slate-400">Birthday wishes + 10% discount coupon auto-scheduled.</p>
-                        </div>
-                     </div>
-                     <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-700 flex items-start gap-3">
-                        <FileText className="text-sky-500 shrink-0 mt-1" size={18} />
-                        <div>
-                           <p className="font-semibold text-sm text-slate-800 dark:text-slate-200">Post-Care Guide</p>
-                           <p className="text-xs text-slate-500 dark:text-slate-400">Do's & Don'ts + Pain management guide queued for post-visit.</p>
-                        </div>
-                     </div>
-                     <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-700 flex items-start gap-3">
-                        <CalendarIcon className="text-teal-500 shrink-0 mt-1" size={18} />
-                        <div>
-                           <p className="font-semibold text-sm text-slate-800 dark:text-slate-200">Treatment Plan</p>
-                           <p className="text-xs text-slate-500 dark:text-slate-400">Aligner & checkup follow-up reminders activated.</p>
-                        </div>
-                     </div>
-                  </div>
-                </div>
+                    {/* Custom Calendar */}
+                    <div className="mb-8 select-none">
+                       <div className="flex justify-between items-center mb-4 bg-slate-50 dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
+                          <button onClick={handlePrevMonth} className="p-2 hover:bg-white dark:hover:bg-slate-700 rounded-lg text-slate-600 dark:text-slate-300 transition-transform active:scale-90"><ChevronLeft size={20}/></button>
+                          <span className="font-bold text-lg text-slate-800 dark:text-white">
+                            {currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                          </span>
+                          <button onClick={handleNextMonth} className="p-2 hover:bg-white dark:hover:bg-slate-700 rounded-lg text-slate-600 dark:text-slate-300 transition-transform active:scale-90"><ChevronRight size={20}/></button>
+                       </div>
+                       
+                       <div className="grid grid-cols-7 text-center mb-2">
+                          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                            <div key={day} className="text-xs font-bold text-slate-400 uppercase">{day}</div>
+                          ))}
+                       </div>
 
-                <p className="text-slate-500 dark:text-slate-400 mb-8 text-sm">
-                  A confirmation has been sent to <strong>{formData.email}</strong>.
-                </p>
-                
-                <div className="flex justify-center gap-4">
-                  <button onClick={() => navigate('/')} className="px-8 py-3 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium transition-colors">Go Home</button>
-                  <button onClick={() => { setStep(1); setAutomationLog([]); setSelectedDate(null); setFormData(prev => ({...prev, time: '', notes: ''})); }} className="px-8 py-3 bg-secondary dark:bg-purple-600 text-white rounded-xl hover:bg-teal-700 dark:hover:bg-purple-700 font-bold shadow-lg transition-colors">Book Another</button>
-                </div>
+                       <div className="grid grid-cols-7 gap-1">
+                          {/* Empty cells for start of month */}
+                          {[...Array(getFirstDayOfMonth(currentMonth))].map((_, i) => <div key={`empty-${i}`} />)}
+                          
+                          {/* Days */}
+                          {[...Array(getDaysInMonth(currentMonth))].map((_, i) => {
+                             const day = i + 1;
+                             const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+                             const isPastDay = isPast(date);
+                             const isAvailable = isDoctorAvailableOnDay(date);
+                             const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
+                             
+                             let cellClass = "h-12 flex flex-col items-center justify-center rounded-xl text-sm transition-all duration-200 relative ";
+                             
+                             if (isPastDay || !isAvailable) {
+                               cellClass += "text-slate-300 dark:text-slate-700 cursor-not-allowed bg-transparent";
+                             } else if (isSelected) {
+                               cellClass += "bg-secondary dark:bg-purple-600 text-white shadow-md scale-105 font-bold ring-2 ring-offset-2 ring-secondary dark:ring-purple-600 dark:ring-offset-slate-800";
+                             } else {
+                               cellClass += "text-slate-700 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-700 cursor-pointer font-medium hover:scale-105 active:scale-95";
+                             }
+
+                             return (
+                               <div key={day} onClick={() => handleDateClick(day)} className={cellClass}>
+                                  {day}
+                                  {isSelected && <span className="w-1.5 h-1.5 bg-white rounded-full mt-1"></span>}
+                               </div>
+                             );
+                          })}
+                       </div>
+                       
+                       <div className="flex gap-4 justify-center mt-6 text-xs text-slate-500 dark:text-slate-400">
+                          <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-secondary dark:bg-purple-600"></span> Selected</div>
+                          <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full border border-secondary text-secondary font-bold flex items-center justify-center text-[8px]">12</span> Today</div>
+                          <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-slate-200 dark:bg-slate-700"></span> Unavailable</div>
+                       </div>
+                    </div>
+
+                    {/* Time Slots */}
+                    {selectedDate && (
+                      <div className="animate-fade-in border-t border-slate-100 dark:border-slate-700 pt-6">
+                        <h3 className="font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                           <Clock size={16} className="text-slate-400"/> Available Slots
+                        </h3>
+                        {timeSlots.length > 0 ? (
+                          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                             {timeSlots.map((slot) => (
+                               <button
+                                 key={slot}
+                                 type="button"
+                                 onClick={() => setFormData({...formData, time: slot})}
+                                 className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                                   formData.time === slot 
+                                     ? 'bg-secondary dark:bg-purple-600 text-white shadow-md scale-110 ring-2 ring-offset-2 ring-secondary dark:ring-purple-600 dark:ring-offset-slate-800' 
+                                     : 'bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 border border-slate-200 dark:border-slate-600 hover:scale-105 active:scale-95'
+                                 }`}
+                               >
+                                 {slot}
+                               </button>
+                             ))}
+                          </div>
+                        ) : (
+                          <p className="text-red-500 text-sm bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">No slots available for this date. Please choose another.</p>
+                        )}
+                      </div>
+                    )}
+                 
+                    <div className="pt-8 flex justify-between">
+                       <button type="button" onClick={() => setStep(1)} className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white font-medium flex items-center gap-2 transition-transform hover:-translate-x-1">
+                         <ChevronLeft size={18} /> Back
+                       </button>
+                       <button 
+                         type="button" 
+                         onClick={handleSubmit} 
+                         disabled={!selectedDate || !formData.time}
+                         className={`px-8 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-all ${
+                            !selectedDate || !formData.time 
+                            ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed' 
+                            : 'bg-secondary dark:bg-purple-600 text-white hover:bg-teal-700 dark:hover:bg-purple-700 hover:scale-105 active:scale-95'
+                         }`}
+                       >
+                         Confirm Booking <CheckCircle size={18} />
+                       </button>
+                    </div>
+                 </>
+               ) : (
+                 <div className="flex flex-col items-center justify-center py-12">
+                    <div className="relative mb-8">
+                       <div className="absolute inset-0 bg-secondary/20 dark:bg-purple-600/20 rounded-full blur-xl animate-pulse"></div>
+                       <Loader2 size={64} className="text-secondary dark:text-purple-500 animate-spin relative z-10" />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Processing Appointment</h3>
+                    <div className="w-full max-w-md bg-slate-100 dark:bg-slate-900 rounded-xl p-4 h-48 overflow-y-auto font-mono text-xs border border-slate-200 dark:border-slate-700 shadow-inner">
+                       {automationLog.map((log, i) => (
+                         <div key={i} className="mb-2 flex items-start gap-2 text-slate-600 dark:text-slate-300 animate-fade-in">
+                            <span className="text-green-500">➜</span> {log}
+                         </div>
+                       ))}
+                       <div className="animate-pulse text-secondary dark:text-sky-400">_</div>
+                    </div>
+                 </div>
+               )}
              </div>
+          )}
+
+          {step === 3 && (
+            <div className="p-8 text-center animate-fade-in">
+              <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600 dark:text-green-400">
+                <CheckCircle size={40} />
+              </div>
+              <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Booking Confirmed!</h2>
+              <p className="text-slate-500 dark:text-slate-400 mb-8">Your appointment has been successfully scheduled.</p>
+
+              <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-6 mb-8 border border-slate-100 dark:border-slate-700 text-left max-w-md mx-auto">
+                 <div className="flex justify-between mb-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <span className="text-slate-500 dark:text-slate-400">Appointment ID</span>
+                    <span className="font-mono font-bold text-slate-800 dark:text-white">#GAL-{Math.floor(Math.random() * 10000)}</span>
+                 </div>
+                 <div className="space-y-3">
+                    <div className="flex justify-between">
+                       <span className="text-slate-500 dark:text-slate-400">Doctor</span>
+                       <span className="font-medium text-slate-900 dark:text-white">{selectedDoctorObj?.name}</span>
+                    </div>
+                    <div className="flex justify-between">
+                       <span className="text-slate-500 dark:text-slate-400">Date</span>
+                       <span className="font-medium text-slate-900 dark:text-white">{selectedDate?.toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                       <span className="text-slate-500 dark:text-slate-400">Time</span>
+                       <span className="font-medium text-slate-900 dark:text-white">{formData.time}</span>
+                    </div>
+                 </div>
+              </div>
+
+              {/* Automation Feedback for User */}
+              <div className="mb-8 text-left max-w-md mx-auto">
+                 <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4 border-l-4 border-secondary dark:border-purple-500 pl-3">
+                    Galaxy Automated Care
+                 </h3>
+                 <div className="space-y-3">
+                    <div className="flex items-start gap-3 bg-sky-50 dark:bg-slate-800/50 p-3 rounded-lg border border-sky-100 dark:border-slate-700">
+                       <Bell size={18} className="text-secondary dark:text-purple-400 mt-0.5 shrink-0" />
+                       <div>
+                          <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">Reminders Set</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">You will receive SMS & WhatsApp alerts 24hrs and 2hrs before your visit.</p>
+                       </div>
+                    </div>
+                    <div className="flex items-start gap-3 bg-purple-50 dark:bg-slate-800/50 p-3 rounded-lg border border-purple-100 dark:border-slate-700">
+                       <Gift size={18} className="text-purple-500 dark:text-purple-400 mt-0.5 shrink-0" />
+                       <div>
+                          <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">Birthday Club</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">We've noted your birthday! Expect a special 10% off coupon on your special day.</p>
+                       </div>
+                    </div>
+                    <div className="flex items-start gap-3 bg-green-50 dark:bg-slate-800/50 p-3 rounded-lg border border-green-100 dark:border-slate-700">
+                       <HeartPulse size={18} className="text-green-500 dark:text-green-400 mt-0.5 shrink-0" />
+                       <div>
+                          <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">Post-Care Guide</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">A personalized 'Do's & Don'ts' guide will be sent to your email after the treatment.</p>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+
+              <button onClick={() => navigate('/')} className="text-secondary dark:text-sky-400 font-semibold hover:underline">
+                Return to Home
+              </button>
+            </div>
           )}
         </div>
       </div>

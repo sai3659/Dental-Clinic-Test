@@ -49,7 +49,7 @@ const DoctorDetails: React.FC = () => {
 
               <Link 
                 to={`/booking?doctor=${doctor.id}`} 
-                className="w-full bg-secondary dark:bg-purple-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700 dark:hover:bg-purple-700 transition-colors shadow-lg flex items-center justify-center gap-2"
+                className="w-full bg-secondary dark:bg-purple-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700 dark:hover:bg-purple-700 transition-all shadow-lg flex items-center justify-center gap-2 hover:scale-105 active:scale-95"
               >
                 <Calendar size={18} /> Book Appointment
               </Link>

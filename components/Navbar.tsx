@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Phone, Calendar, Moon, Sun } from 'lucide-react';
@@ -57,7 +58,7 @@ const Navbar: React.FC = () => {
               <Link
                 key={link.name}
                 to={link.path}
-                className={`text-sm font-medium transition-colors duration-200 ${
+                className={`text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95 ${
                   isActive(link.path) 
                     ? 'text-secondary dark:text-sky-400 font-bold' 
                     : 'text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white'
@@ -71,18 +72,18 @@ const Navbar: React.FC = () => {
           <div className="hidden md:flex items-center gap-4">
              <button
                onClick={toggleTheme}
-               className="p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+               className="p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all hover:scale-110 active:scale-90"
                aria-label="Toggle Dark Mode"
              >
                {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
              </button>
-             <a href={`tel:${CLINIC_PHONE}`} className="flex items-center gap-1 text-slate-600 dark:text-slate-300 hover:text-secondary dark:hover:text-white text-sm font-medium">
+             <a href={`tel:${CLINIC_PHONE}`} className="flex items-center gap-1 text-slate-600 dark:text-slate-300 hover:text-secondary dark:hover:text-white text-sm font-medium hover:scale-105 transition-transform">
                 <Phone size={16} />
                 <span>Call Us</span>
              </a>
             <button
               onClick={handleBookNow}
-              className="bg-gradient-to-r from-secondary to-primary dark:from-indigo-600 dark:to-purple-600 text-white px-5 py-2.5 rounded-full text-sm font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2"
+              className="bg-gradient-to-r from-secondary to-primary dark:from-indigo-600 dark:to-purple-600 text-white px-5 py-2.5 rounded-full text-sm font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105 active:scale-95 active:translate-y-0 transition-all duration-200 flex items-center gap-2"
             >
               <Calendar size={18} />
               Book Appointment
@@ -92,13 +93,13 @@ const Navbar: React.FC = () => {
           <div className="flex items-center gap-4 md:hidden">
             <button
                onClick={toggleTheme}
-               className="p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+               className="p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all hover:scale-110 active:scale-90"
              >
                {theme === 'light' ? <Moon size={22} /> : <Sun size={22} />}
              </button>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-slate-600 dark:text-slate-300 hover:text-secondary p-2"
+              className="text-slate-600 dark:text-slate-300 hover:text-secondary p-2 transition-transform active:scale-90"
             >
               {isOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
@@ -115,7 +116,7 @@ const Navbar: React.FC = () => {
                 key={link.name}
                 to={link.path}
                 onClick={() => setIsOpen(false)}
-                className={`block px-3 py-3 rounded-md text-base font-medium ${
+                className={`block px-3 py-3 rounded-md text-base font-medium transition-all active:scale-98 ${
                   isActive(link.path)
                     ? 'bg-sky-50 dark:bg-slate-800 text-secondary dark:text-sky-400'
                     : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-white'
@@ -126,7 +127,7 @@ const Navbar: React.FC = () => {
             ))}
             <button
               onClick={handleBookNow}
-              className="w-full mt-4 bg-gradient-to-r from-secondary to-primary dark:from-indigo-600 dark:to-purple-600 text-white px-5 py-3 rounded-lg text-base font-semibold shadow-md flex items-center justify-center gap-2"
+              className="w-full mt-4 bg-gradient-to-r from-secondary to-primary dark:from-indigo-600 dark:to-purple-600 text-white px-5 py-3 rounded-lg text-base font-semibold shadow-md flex items-center justify-center gap-2 active:scale-95 transition-transform"
             >
               <Calendar size={20} />
               Book Appointment

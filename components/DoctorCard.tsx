@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Doctor } from '../types';
 import { Star, Clock } from 'lucide-react';
@@ -41,10 +42,10 @@ const DoctorCard: React.FC<{ doctor: Doctor }> = ({ doctor }) => {
           </div>
 
           <div className="flex gap-2 mt-auto">
-            <Link to={`/doctors/${doctor.id}`} className="flex-1 border border-secondary dark:border-sky-500 text-secondary dark:text-sky-400 py-2 rounded-lg text-sm font-medium text-center hover:bg-sky-50 dark:hover:bg-slate-700 transition-colors">
+            <Link to={`/doctors/${doctor.id}`} className="flex-1 border border-secondary dark:border-sky-500 text-secondary dark:text-sky-400 py-2 rounded-lg text-sm font-medium text-center hover:bg-sky-50 dark:hover:bg-slate-700 transition-colors active:scale-95">
               Profile
             </Link>
-            <Link to={`/booking?doctor=${doctor.id}`} className="flex-1 bg-secondary dark:bg-sky-600 text-white py-2 rounded-lg text-sm font-medium text-center hover:bg-teal-700 dark:hover:bg-sky-700 transition-colors shadow-md hover:shadow-lg">
+            <Link to={`/booking?doctor=${doctor.id}`} className="flex-1 bg-secondary dark:bg-sky-600 text-white py-2 rounded-lg text-sm font-medium text-center hover:bg-teal-700 dark:hover:bg-sky-700 transition-all shadow-md hover:shadow-lg hover:scale-105 active:scale-95">
               Book
             </Link>
           </div>

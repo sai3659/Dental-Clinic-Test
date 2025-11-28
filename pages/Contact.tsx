@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { CLINIC_ADDRESS, CLINIC_PHONE, CLINIC_EMAIL } from '../constants';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
@@ -54,22 +55,22 @@ const Contact: React.FC = () => {
                  <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">First Name</label>
-                      <input type="text" className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none dark:text-white" />
+                      <input type="text" className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none dark:text-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Last Name</label>
-                      <input type="text" className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none dark:text-white" />
+                      <input type="text" className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none dark:text-white transition-colors" />
                     </div>
                  </div>
                  <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Email</label>
-                    <input type="email" className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none dark:text-white" />
+                    <input type="email" className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none dark:text-white transition-colors" />
                  </div>
                  <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Message</label>
-                    <textarea rows={4} className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none dark:text-white"></textarea>
+                    <textarea rows={4} className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-secondary dark:focus:ring-purple-500 outline-none dark:text-white transition-colors"></textarea>
                  </div>
-                 <button className="bg-secondary dark:bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-teal-700 dark:hover:bg-purple-700 transition-colors">
+                 <button className="bg-secondary dark:bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-teal-700 dark:hover:bg-purple-700 transition-all hover:shadow-lg hover:scale-105 active:scale-95">
                    Send Message
                  </button>
               </form>

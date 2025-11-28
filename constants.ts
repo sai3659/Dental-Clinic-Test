@@ -4,9 +4,9 @@ import {
   Stethoscope, Smile, ShieldCheck, Zap, Activity, Heart, Clock, User
 } from 'lucide-react';
 
-export const CLINIC_ADDRESS = "Plot No. 154, Gachibowli – Miyapur Road, Opp. Harsha Toyota, Kondapur, Hyderabad, Telangana 500084";
-export const CLINIC_PHONE = "+91 98765 43210";
-export const CLINIC_EMAIL = "care@galaxydental.com";
+export const CLINIC_ADDRESS = "123 Galaxy Tower, Stardust Lane, Cyber City, Hyderabad, 500081";
+export const CLINIC_PHONE = "+91 7993051031";
+export const CLINIC_EMAIL = "infinitesai3@gmail.com";
 
 export const DOCTORS: Doctor[] = [
   {

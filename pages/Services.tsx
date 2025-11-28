@@ -28,10 +28,10 @@ const Services: React.FC = () => {
                  </div>
               </div>
               <div className="w-full md:w-1/2 space-y-6">
-                 <div className="w-16 h-16 bg-sky-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-secondary dark:text-sky-400 font-bold text-2xl mb-4 border border-slate-100 dark:border-slate-700 relative group cursor-help">
+                 <div className="w-16 h-16 bg-sky-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-secondary dark:text-sky-400 font-bold text-2xl mb-4 border border-slate-100 dark:border-slate-700 relative group cursor-help transition-transform hover:scale-110">
                    {service.title.charAt(0)}
                    {/* Tooltip */}
-                   <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-slate-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                   <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-slate-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                       {service.title}
                       <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></span>
                    </span>
@@ -55,7 +55,7 @@ const Services: React.FC = () => {
                       <span className="block text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Estimated Cost</span>
                       <span className="text-xl font-bold text-secondary dark:text-sky-400">{service.priceRange}</span>
                     </div>
-                    <Link to={`/booking`} className="bg-slate-900 dark:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium hover:bg-secondary dark:hover:bg-purple-600 transition-colors">
+                    <Link to={`/booking`} className="bg-slate-900 dark:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium hover:bg-secondary dark:hover:bg-purple-600 transition-all hover:shadow-lg hover:scale-105 active:scale-95">
                       Book Now
                     </Link>
                  </div>
